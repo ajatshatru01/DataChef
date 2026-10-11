@@ -1,0 +1,81 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "datachef"
+version = "0.1.0"
+description = "An open-source AI agent for autonomous dataset investigation"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.10"
+keywords = ["data", "ai", "agent", "eda", "analytics", "llm"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Scientific/Engineering :: Information Analysis",
+]
+
+dependencies = [
+    # Data processing
+    "polars>=0.20",
+    "pyarrow>=14",
+    "duckdb>=0.10",
+    # Statistics
+    "numpy>=1.26",
+    "scipy>=1.12",
+    # AI / model integration
+    # huggingface-hub: Apache 2.0 — native InferenceClient with tool-calling support
+    "huggingface-hub>=0.23",
+    "pydantic>=2.0",
+    "python-dotenv>=1.0",
+    "requests>=2.31",
+    # UI and visualization
+    "streamlit>=1.33",
+    "plotly>=5.20",
+    # Utilities
+    # tokenizers: Apache 2.0 — fast BPE tokenizer for token budget estimation
+    "tokenizers>=0.19",
+    "rich>=13.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-cov>=5.0",
+    "ruff>=0.4",
+    "mypy>=1.10",
+    "pre-commit>=3.7",
+]
+
+[project.scripts]
+datachef = "datachef.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["datachef*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-v --tb=short"
+filterwarnings = ["ignore::DeprecationWarning"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+ignore = ["E501"]
+
+[tool.mypy]
+python_version = "3.10"
+strict = false
+ignore_missing_imports = true

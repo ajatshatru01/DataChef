@@ -55,7 +55,10 @@ class FindingComposer:
         conclusion, interpretation, limitations = _parse_conclusion(final_response_content)
 
         # Build evidence list from successful tool call records
-        successful_records = [r for r in state.tool_call_log if r.validation_passed]
+        successful_records = [
+            r for r in state.tool_call_log
+            if r.validation_passed and r.execution_succeeded
+        ]
         evidence: list[Evidence] = []
         for i, record in enumerate(successful_records):
             evidence.append(Evidence(

@@ -205,10 +205,12 @@ class InvestigationState(BaseModel):
             self.tool_call_count += 1
 
     def recent_tool_results(self, n: int) -> list[ToolCallRecord]:
-        """Return the last n successful tool call records."""
-        successful = [r for r in self.tool_call_log if r.validation_passed]
+        """Return the last n tool call records that passed validation and executed successfully."""
+        successful = [
+            r for r in self.tool_call_log
+            if r.validation_passed and r.execution_succeeded
+        ]
         return successful[-n:]
-
 
 # ---------------------------------------------------------------------------
 # Discovery candidate

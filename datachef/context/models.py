@@ -124,10 +124,13 @@ class ToolCallRecord(BaseModel):
 # ---------------------------------------------------------------------------
 
 
+MessageRole = Literal["system", "user", "assistant", "tool"]
+
+
 class Message(BaseModel):
     """A single message in the conversation history."""
 
-    role: Literal["system", "user", "assistant", "tool"]
+    role: MessageRole
     content: str | None = None
     tool_call_id: str | None = None
     tool_calls: list[dict[str, Any]] | None = None
@@ -196,7 +199,7 @@ class InvestigationState(BaseModel):
     turn_count: int = 0
     tool_call_count: int = 0
 
-    def add_message(self, role: str, content: str, **kwargs: Any) -> None:
+    def add_message(self, role: MessageRole, content: str, **kwargs: Any) -> None:
         self.conversation_history.append(Message(role=role, content=content, **kwargs))
 
     def add_tool_record(self, record: ToolCallRecord) -> None:

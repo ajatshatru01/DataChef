@@ -364,23 +364,23 @@ class InvestigationAgent:
 
                 if on_step:
                     on_step("validating", {"tool": tc.tool_name, "arguments": tc.arguments})
-                error_msg = validator.validate_and_format_error(tc.tool_name, tc.arguments)
-                if error_msg:
+                validation_error = validator.validate_and_format_error(tc.tool_name, tc.arguments)
+                if validation_error:
                     record = ToolCallRecord(
                         call_id=tc.call_id,
                         turn_index=sub_state.turn_count,
                         tool_name=tc.tool_name,
                         arguments=tc.arguments,
-                        result_summary=error_msg,
+                        result_summary=validation_error,
                         validation_passed=False,
                         execution_succeeded=False,
-                        error_message=error_msg,
+                        error_message=validation_error,
                     )
                     sub_state.add_tool_record(record)
                     messages.append({
                         "role": "tool",
                         "tool_call_id": tc.call_id,
-                        "content": error_msg,
+                        "content": validation_error,
                     })
                     continue
 

@@ -280,8 +280,11 @@ def _find_unverified_numbers(
         f"{record.result_summary}\n{json.dumps(record.result_data, default=str)}"
         for record in records
     )
-    evidence_values = [_number_value(token) for token in _NUMBER_RE.findall(evidence_text)]
-    evidence_values = [value for value in evidence_values if value is not None]
+    evidence_values: list[float] = [
+        val
+        for token in _NUMBER_RE.findall(evidence_text)
+        if (val := _number_value(token)) is not None
+    ]
 
     unverified: list[str] = []
     for token in _NUMBER_RE.findall(text):

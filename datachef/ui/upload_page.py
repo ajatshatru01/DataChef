@@ -57,20 +57,20 @@ def render_upload_page() -> None:
     ):
         with st.spinner("Loading dataset into Polars engine..."):
             session_store.reset_session()
-            df, _ = session_store.load_dataset(uploaded_file)
+            loaded_df, _ = session_store.load_dataset(uploaded_file)
         with st.spinner("Running deterministic dataset profiler..."):
-            session_store.profile_dataset(df, source_path=uploaded_file.name)
+            session_store.profile_dataset(loaded_df, source_path=uploaded_file.name)
         st.success(f"Successfully loaded and profiled `{uploaded_file.name}`!")
         st.rerun()
 
     # If dataset is loaded, show profile overview
     store = session_store.get_dataset_store()
     state = session_store.get_state()
-    df = store.get_frame() if store.is_loaded() else None
+    current_df = store.get_frame() if store.is_loaded() else None
     profile = state.dataset_profile
 
-    if df is not None and df.height > 0 and profile is not None:
-        _render_profile_view(df, profile)
+    if current_df is not None and current_df.height > 0 and profile is not None:
+        _render_profile_view(current_df, profile)
 
 
 def _render_profile_view(df: pl.DataFrame, profile: DatasetProfile) -> None:
@@ -183,10 +183,10 @@ def _load_sample_titanic() -> None:
 
     pclass = np.random.choice(classes, size=n, p=[0.24, 0.21, 0.55])
     sex = np.random.choice(genders, size=n, p=[0.64, 0.36])
-    age = np.round(np.random.normal(29, 14, n), 1)
-    age = [a if a > 1 else 1.0 for a in age]
+    raw_age = np.round(np.random.normal(29, 14, n), 1)
+    clipped_age: list[float] = [float(a) if a > 1 else 1.0 for a in raw_age]
     # some missing age
-    age = [a if random.random() > 0.18 else None for a in age]
+    age: list[float | None] = [a if random.random() > 0.18 else None for a in clipped_age]
 
     # Survival probabilities influenced by gender and class
     survived = []

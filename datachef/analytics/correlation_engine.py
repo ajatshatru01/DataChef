@@ -46,14 +46,14 @@ class CorrelationEngine:
             }
 
         arrs = {col: sub[col].cast(pl.Float64).to_numpy() for col in columns}
-        finite_mask = np.logical_and.reduce([np.isfinite(arr) for arr in arrs.values()])
+        finite_mask = np.all([np.isfinite(arr) for arr in arrs.values()], axis=0)
         if int(np.sum(finite_mask)) < 5:
             return {
                 "error": "Not enough finite complete rows to compute correlations "
                 "(minimum 5 required)."
             }
         arrs = {col: arr[finite_mask] for col, arr in arrs.items()}
-        matrix: dict[str, dict[str, float]] = {}
+        matrix: dict[str, dict[str, float | None]] = {}
 
         for col_a in columns:
             matrix[col_a] = {}

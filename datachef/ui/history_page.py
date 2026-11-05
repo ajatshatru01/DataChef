@@ -28,7 +28,7 @@ def render_history_page() -> None:
         session_options[label] = s["session_id"]
 
     selected_label = st.selectbox("Select Investigation Session", options=list(session_options.keys()))
-    selected_session_id = session_options[selected_label]
+    selected_session_id = session_options.get(selected_label or "", current_state.session_id)
 
     # Load findings
     if selected_session_id == current_state.session_id and current_state.findings:
@@ -50,7 +50,9 @@ def render_history_page() -> None:
         filter_type = st.radio("Filter by Type", ["All", "Conversational", "Discovery"], horizontal=True)
         filtered = [
             f for f in findings_to_display
-            if filter_type == "All" or f.trigger.lower() == filter_type.lower()
+            if filter_type is None
+            or filter_type == "All"
+            or (f.trigger and f.trigger.lower() == filter_type.lower())
         ]
 
         # Export section

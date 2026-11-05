@@ -10,8 +10,10 @@ from __future__ import annotations
 import json
 
 from datachef.context.models import (
+    CategoricalStats,
     DatasetProfile,
     FindingDraft,
+    NumericStats,
     ToolCallRecord,
 )
 
@@ -85,11 +87,14 @@ class ContextBuilder:
         if numeric:
             parts.append("Numeric columns (mean / std / min / max):")
             for col in numeric[:8]:  # cap at 8 to save tokens
-                if col.stats and hasattr(col.stats, "mean") and col.stats.mean is not None:
+                if isinstance(col.stats, NumericStats) and col.stats.mean is not None:
                     s = col.stats
+                    std_str = f"{s.std:.3g}" if s.std is not None else "N/A"
+                    min_str = f"{s.min:.3g}" if s.min is not None else "N/A"
+                    max_str = f"{s.max:.3g}" if s.max is not None else "N/A"
                     parts.append(
-                        f"  {col.name}: mean={s.mean:.3g}  std={s.std:.3g}  "
-                        f"min={s.min:.3g}  max={s.max:.3g}"
+                        f"  {col.name}: mean={s.mean:.3g}  std={std_str}  "
+                        f"min={min_str}  max={max_str}"
                     )
 
         # Categorical top values
@@ -97,7 +102,7 @@ class ContextBuilder:
         if categorical:
             parts.append("Categorical columns (top values):")
             for col in categorical[:6]:
-                if col.stats and hasattr(col.stats, "top_values") and col.stats.top_values:
+                if isinstance(col.stats, CategoricalStats) and col.stats.top_values:
                     top = col.stats.top_values[:3]
                     top_str = ", ".join(
                         f"{t['value']} ({t['pct']:.1f}%)" for t in top

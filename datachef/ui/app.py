@@ -163,7 +163,7 @@ def main() -> None:
                 index=0 if is_ollama else 1,
                 key="ui_provider_choice",
             )
-            selected_prov = "ollama" if "Ollama" in provider_choice else "huggingface"
+            selected_prov = "ollama" if provider_choice and "Ollama" in provider_choice else "huggingface"
 
             if selected_prov == "ollama":
                 current_host = st.session_state.get("datachef_runtime_ollama_host") or config.OLLAMA_HOST

@@ -158,6 +158,16 @@ class Evidence(BaseModel):
     is_primary: bool = False
 
 
+class NumericalClaim(BaseModel):
+    """A structured numerical claim derived from a tool call."""
+
+    metric_name: str
+    value: float
+    unit: str | None = None
+    source_call_id: str
+    result_path: str
+
+
 class Finding(BaseModel):
     """The output of a completed investigation."""
 
@@ -172,6 +182,7 @@ class Finding(BaseModel):
     interpretation: str = ""
     limitations: list[str] = Field(default_factory=list)
     unverified_numerical_claims: list[str] = Field(default_factory=list)
+    numerical_claims: list[NumericalClaim] = Field(default_factory=list)
     tool_call_count: int = 0
     turn_count: int = 0
     hit_limit: bool = False

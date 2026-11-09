@@ -135,13 +135,15 @@ class DatasetProfiler:
                 # Check if it looks like an identifier (short, consistent)
                 non_null = series.drop_nulls()
                 if len(non_null) > 0:
-                    avg_len = non_null.str.len_chars().mean() or 0
+                    mean_val = non_null.str.len_chars().mean()
+                    avg_len = float(mean_val) if isinstance(mean_val, (int, float)) else 0.0
                     if avg_len < 40:
                         return "id"
             # Text heuristic: long average string length
             non_null = series.drop_nulls()
             if len(non_null) > 0:
-                avg_len = non_null.str.len_chars().mean() or 0
+                mean_val = non_null.str.len_chars().mean()
+                avg_len = float(mean_val) if isinstance(mean_val, (int, float)) else 0.0
                 if avg_len > _TEXT_LENGTH_THRESHOLD:
                     return "text"
             # Reasonable cardinality → categorical
@@ -244,7 +246,7 @@ class DatasetProfiler:
             return {}
 
         raw_arrays = [sub[col].cast(pl.Float64).to_numpy() for col in numeric_cols]
-        finite_mask = np.logical_and.reduce([np.isfinite(arr) for arr in raw_arrays])
+        finite_mask = np.all([np.isfinite(arr) for arr in raw_arrays], axis=0)
         if int(np.sum(finite_mask)) < 5:
             return {}
 

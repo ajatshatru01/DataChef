@@ -14,7 +14,7 @@ from __future__ import annotations
 import json
 import time
 import uuid
-from typing import Any
+from typing import Any, cast
 
 from huggingface_hub import InferenceClient
 from huggingface_hub.errors import HfHubHTTPError
@@ -60,7 +60,7 @@ class HuggingFaceProvider(BaseProvider):
             None if self._inference_provider == "auto" else self._inference_provider
         )
         self._client = InferenceClient(
-            provider=provider_arg,
+            provider=cast(Any, provider_arg),
             api_key=self._api_key,
             timeout=float(self._timeout),
         )

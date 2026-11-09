@@ -148,7 +148,7 @@ class StatEngine:
         Columns with no missing values are included for completeness.
         """
         n_rows = len(df)
-        columns_info = []
+        columns_info: list[dict[str, Any]] = []
         for col in df.columns:
             null_count = df[col].null_count()
             columns_info.append({
@@ -158,7 +158,7 @@ class StatEngine:
                 "has_missing": null_count > 0,
             })
 
-        columns_info.sort(key=lambda x: -x["null_count"])
+        columns_info.sort(key=lambda x: int(x["null_count"]), reverse=True)
         n_complete_cols = sum(1 for c in columns_info if not c["has_missing"])
         n_rows_with_any_null = int(df.filter(
             pl.any_horizontal(pl.col(c).is_null() for c in df.columns)
